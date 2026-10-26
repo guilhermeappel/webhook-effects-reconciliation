@@ -1,0 +1,86 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+# Cancel superseded runs of a pull request, but let every commit on main finish so each one gets a result.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false   # no later step pushes, so the token does not need to stay in the checkout
+
+      # The SDK version comes from global.json so CI and local builds use the same one.
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore EventReconciliation.slnx
+
+      - name: Build
+        run: dotnet build EventReconciliation.slnx --no-restore --configuration Release -warnaserror
+
+      - name: Check formatting
+        run: dotnet format EventReconciliation.slnx --no-restore --verify-no-changes
+
+      # Testcontainers starts a real PostgreSQL; the runner has Docker.
+      - name: Test
+        run: dotnet test EventReconciliation.slnx --no-build --configuration Release --logger trx --results-directory TestResults
+
+      # A green run that executed almost nothing (a filter that matches no test, a project that stopped being
+      # discovered) must not pass. The floor is the current count minus a margin; raise it when tests are added.
+      - name: Check that the tests ran
+        run: |
+          python3 - <<'PY'
+          import glob
+          import sys
+          import xml.etree.ElementTree as ET
+          floor = 664
+          ns = '{http://microsoft.com/schemas/VisualStudio/TeamTest/2010}'
+          executed = 0
+          for path in glob.glob('TestResults/*.trx'):
+              counters = ET.parse(path).getroot().find(f'.//{ns}Counters')
+              executed += int(counters.get('executed'))
+          print(f'{executed} tests executed (floor {floor})')
+          if executed < floor:
+              sys.exit(f'only {executed} tests executed, expected at least {floor}')
+          PY
+
+      # The logs are not always at hand (a reviewer reading only the checks tab, or an API client), so
+      # each failed test is also raised as an annotation, which the checks API returns with the run.
+      - name: Annotate failed tests
+        if: failure()
+        run: |
+          python3 - <<'PY'
+          import glob
+          import xml.etree.ElementTree as ET
+          ns = '{http://microsoft.com/schemas/VisualStudio/TeamTest/2010}'
+          for path in glob.glob('TestResults/*.trx'):
+              for result in ET.parse(path).getroot().iter(ns + 'UnitTestResult'):
+                  if result.get('outcome') != 'Failed':
+                      continue
+                  message = result.find(f'.//{ns}Message')
+                  text = ' '.join((message.text or '').split()) if message is not None else ''
+                  print(f"::error title={result.get('testName')}::{text[:1000]}")
+          PY
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: test-results
+          path: TestResults

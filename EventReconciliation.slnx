@@ -1,0 +1,21 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="CONTRIBUTING.md" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+    <File Path="docker-compose.yml" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+  </Folder>
+  <Folder Name="/sql/">
+    <File Path="sql/attribution.sql" />
+    <File Path="sql/invariants.sql" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/WebhookInbox/WebhookInbox.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WebhookInbox.Tests/WebhookInbox.Tests.csproj" />
+  </Folder>
+</Solution>

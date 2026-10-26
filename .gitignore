@@ -1,0 +1,71 @@
+## .NET
+bin/
+obj/
+out/
+publish/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+*.pidb
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+*.nupkg
+*.snupkg
+
+## Visual Studio / Rider / VS Code
+.vs/
+.vscode/
+.idea/
+*.sln.docstates
+*.DotSettings.user
+
+## Local assistant settings
+.claude/settings.local.json
+
+## Test / coverage results
+[Tt]est[Rr]esult*/
+[Cc]overage*/
+*.trx
+*.coverage
+*.coveragexml
+
+## Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Ll]og/
+[Ll]ogs/
+
+## Rider
+*.sln.iml
+
+## macOS
+.DS_Store
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+## Linux
+*~
+
+## Secrets / local overrides
+*.env
+.env.local
+appsettings.*.local.json
+secrets.json
+
+TestResults/

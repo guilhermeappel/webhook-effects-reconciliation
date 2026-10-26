@@ -1,0 +1,40 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directory: /
+    schedule:
+      interval: monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "build(deps)"
+    groups:
+      test-tooling:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+          - "coverlet.collector"
+          - "Microsoft.Extensions.TimeProvider.Testing"
+      # Pinned to the same version on purpose (see Directory.Packages.props), so
+      # they have to move together or CI sees a half-aligned set.
+      dotnet-platform:
+        patterns:
+          - "Microsoft.EntityFrameworkCore*"
+          - "Npgsql.EntityFrameworkCore*"
+          - "Microsoft.Extensions.*"
+          - "Microsoft.AspNetCore.*"
+        exclude-patterns:
+          # versioned on its own (10.10.x while the platform is 10.0.x), so it is not part of this set
+          - "Microsoft.Extensions.TimeProvider.Testing"
+      testcontainers:
+        patterns:
+          - "Testcontainers*"
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: "ci(deps)"
+    groups:
+      actions:
+        patterns:
+          - "*"

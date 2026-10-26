@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <!-- Code-style rules from .editorconfig are enforced by the build, and the analyzer rule set is
+         pinned to the .NET 10 rules so that upgrading the SDK does not enable new ones and turn CI
+         red without a code change. -->
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <AnalysisLevel>10.0-recommended</AnalysisLevel>
+    <!-- Keep NuGet vulnerability advisories visible as warnings, but do not let a newly published
+         advisory turn a CI build with warnings-as-errors red without any code change. Dependabot
+         opens a PR for the affected package instead. -->
+    <WarningsNotAsErrors>$(WarningsNotAsErrors);NU1901;NU1902;NU1903;NU1904</WarningsNotAsErrors>
+  </PropertyGroup>
+</Project>

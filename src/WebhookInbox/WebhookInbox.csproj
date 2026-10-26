@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="WebhookInbox.Tests" />
+  </ItemGroup>
+
+  <!-- The development token and the local database password are for a laptop. They stay out of whatever is published,
+       so a published build cannot be started with them by setting the environment to Development. -->
+  <ItemGroup>
+    <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+  </ItemGroup>
+
+</Project>
